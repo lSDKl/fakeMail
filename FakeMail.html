@@ -37,6 +37,13 @@
                 padding:0px 15px;
             }
 
+            /* Custom Button */
+            @media only screen and (min-width: 412px) {
+                .custom-button {
+                    margin-right: 3px;
+                }
+            }
+            
             /* Vertical alignment of text in table */
             .table > tbody > tr > td {
                 vertical-align: middle;
@@ -86,7 +93,6 @@
                                 <input type="text"  ng-model="text" class="form-control" placeholder="Enter text...">
                             </div>   
                         </div>
-
                     </div>
 
                 </div>
@@ -101,7 +107,7 @@
                 </div>
                 
                 <!-- Email table -->
-                <div class="table-responsive">          
+                <div class="table">          
                     <table class="table table-hover">
                         <thead>
                             <tr>
@@ -115,10 +121,8 @@
                                 <td>{{email.from}}</td>
                                 <td>{{email.subject}}</td>
                                 <td>
-                                    <div class="btn-group pull-right" role="group">
-                                        <button type="button" class="btn btn-primary btn-sm" ng-click="showEmail(email)"><span class="glyphicon glyphicon-eye-open"></span></button>
-                                        <button type="button" class="btn btn-primary btn-sm" ng-click="removeEmail(email)"><span class="glyphicon glyphicon-trash"></button>
-                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="showEmail(email)"><span class="glyphicon glyphicon-eye-open"></span></button>
+                                    <button type="button" class="btn btn-primary btn-sm pull-right custom-button" ng-click="removeEmail(email)"><span class="glyphicon glyphicon-trash"></button>  
                                 </td>
                             </tr>
                         </tbody>
@@ -131,16 +135,54 @@
                 <!-- Panels -->
                 <div class="row">
 
+                    <!-- See Email -->
+                    <div class="col-lg-6" id="seeEmail">
+                        <div class="panel panel-primary" ng-show="isVisible">
+
+                            <div class="panel-heading">
+                                <h2 class="panel-title">Email</h2>  
+                            </div>
+
+                            <div class="panel-body">
+                                <!-- Email -->
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">From</span>
+                                        <div class="form-control">{{email.from}}</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Subject-->
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Subject</span>
+                                        <div class="form-control">{{email.subject}}</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Body -->
+                                <div class="well"> <p>{{email.body}}</p></div>
+
+                                <!-- Cancel Button-->
+                                <button type="button" ng-click="hideEmail()" class="btn btn-primary pull-right">Close</button>
+                               
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Add Emails -->
                     <div class="col-lg-6">
                         <div class="panel panel-primary">
+
                             <div class="panel-heading">
                                 <h3 class="panel-title">Add Email</h3>
                             </div>
+
                             <div class="panel-body">
                                 <!-- Form -->
                                 <form name="newEmail">
                                     
+                                    <!-- Email -->
                                     <div class="form-group" ng-show="newEmail.newFrom.$dirty && newEmail.newFrom.$invalid">
                                         <div ng-show ="newEmail.newFrom.$error.required" class="alert alert-danger" role="alert">
                                             From field is required.
@@ -156,7 +198,7 @@
                                         </div>
                                     </div>
 
-
+                                    <!-- Subject -->
                                     <div class="form-group" ng-show="newEmail.newSubject.$dirty && newEmail.newSubject.$invalid">
                                         <div ng-show ="newEmail.newSubject.$error.required" class="alert alert-danger" role="alert">
                                             Subject field is required.
@@ -169,6 +211,7 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Body -->
                                     <div class="form-group" ng-show="newEmail.newBody.$dirty && newEmail.newBody.$invalid">
                                         <div ng-show ="newEmail.newBody.$error.required" class="alert alert-danger" role="alert">
                                             Body field is required.
@@ -178,38 +221,16 @@
                                         <textarea class="form-control" name="newBody" ng-model="newEmail.body" placeholder="Enter body of email..." rows="5" required></textarea>
                                     </div> 
 
-                                    <button type="button"  ng-click="addEmail()" class="btn btn-primary">Save</button>
+                                    <!-- Buttons -->
+                                    <button type="button"  ng-click="addEmail()" ng-disabled="newEmail.newFrom.$invalid || newEmail.newSubject.$invalid || newEmail.newBody.$invalid" class="btn btn-primary">Save</button>
                                     <button type="button" ng-click="resetForm()" class="btn btn-primary">Cancel</button>
 
                                 </form>
-
-
                             </div>
                         </div>
                     </div>
-
-                    <!-- See Email -->
-                    <div class="col-lg-6" id="seeEmail">
-                        <div class="panel panel-primary" ng-show="isVisible">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <h2 class="panel-title col-sm-11">Email</h2>
-                                    <span class="glyphicon glyphicon-remove col-sm-1" ng-click="hideEmail()"></span>
-                                </div>
-                            </div>
-                            <div class="panel-body">
-                                <p><b>From:</b> {{email.from}}</p>
-                                <p><b>Subject:</b> {{email.subject}}</p>
-                                <p>{{email.body}}</p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
-
-                
             </div>
-            
         </div>
 
         <!-- Controller -->
@@ -233,7 +254,7 @@
                     {from:'pedro@gmail.com', subject:'CV', body:'Dear ' + $scope.user +  ', Please remember to send me your CV as soon as posible! I will write you back as soon as I have more information. Pedro Rodriguez'}
                 ];
                 
-                //Email content
+                //Show Email content
                 $scope.isVisible = false;
                 $scope.email;
 
@@ -247,26 +268,34 @@
                     $scope.isVisible = false;
                 }
 
-                //Removes Email from list
+                //Remove Email from list
                 $scope.removeEmail = function(item) { 
                     var index = $scope.emails.indexOf(item);
                     // If the email to delete is the one displayed, remove the context from the window
                     if(JSON.stringify($scope.email) === JSON.stringify(item) ){
                         $scope.email = '';
+                        $scope.hideEmail();
                     }
                     $scope.emails.splice(index, 1);     
                 }
 
-                // Add Email
+                //Add Email to list
                 $scope.addEmail = function() {
                     $scope.emails.push({    from: $scope.newEmail.from, 
                                             subject: $scope.newEmail.subject, 
                                             body: $scope.newEmail.body });
 			    }
 
-                // Reset Form
+                //Reset Form
                 $scope.resetForm = function() {
-                    $scope.newEmail = {};
+                   
+                    $scope.newEmail.from = '';
+                    $scope.newEmail.subject = '';
+                    $scope.newEmail.body = '';
+                    $scope.newEmail.$setPristine();
+                    $scope.newEmail.$setValidity();
+                    $scope.newEmail.$setUntouched();
+                   
                 }
             });
         
